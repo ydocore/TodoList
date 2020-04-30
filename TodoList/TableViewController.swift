@@ -14,12 +14,19 @@ class TableViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let defaults = UserDefaults.standard
 
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
+        
+        if defaults.bool(forKey: "firstLaunch") {
+            addSectionContents()
+            defaults.set(false, forKey: "firstLaunch")
+        }
         
         tableView.tableFooterView = UIView(frame: .zero)
         addSectionContents()
