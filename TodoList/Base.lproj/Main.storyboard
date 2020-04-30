@@ -98,7 +98,7 @@
         <!--メイン画面-->
         <scene sceneID="OId-V8-wJt">
             <objects>
-                <tableViewController id="yBT-y8-rR4" sceneMemberID="viewController">
+                <tableViewController id="yBT-y8-rR4" customClass="TableViewController" customModule="TodoList" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="cGF-eE-lgH">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
