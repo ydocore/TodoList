@@ -6,6 +6,8 @@
 //  Copyright © 2020 Swift-Biginners. All rights reserved.
 //
 
+/* Add cell setting*/
+
 import UIKit
 
 protocol TableViewCellDelegate {
