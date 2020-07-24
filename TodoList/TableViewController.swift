@@ -58,34 +58,49 @@ class TableViewController: UITableViewController, TableViewCellDelegate, TableVi
         
         //カテゴリ削除
         let deleteCategory: UIAlertAction = UIAlertAction(title: "カテゴリ削除", style: .default, handler:{(action: UIAlertAction!) -> Void in
-            let deleteAlert: UIAlertController = UIAlertController(title: "カテゴリ削除", message: "削除したいカテゴリを選択してください\n\n\n\n\n\n\n\n", preferredStyle:  .alert)
-            let deleteAction: UIAlertAction = UIAlertAction(title: "OK", style: .default, handler:{
-                // ボタンが押された時の処理を書く（クロージャ実装）
-                (action: UIAlertAction!) -> Void in
-                let realm = try! Realm()
-//                let realmData = realm.objects(TodoModel.self)
-                let realmData = realm.objects(RealmData.self)
-                try! realm.write {
-                    realm.delete(realmData[0].todoModel[self.pickerRow].todoCentents)
-                    realm.delete(realmData[0].todoModel[self.pickerRow])
-                }
-                print("\n\n\n~realmData when Delete Category~\n\n\(realmData)")
-                self.tableView.reloadData()
-            })
-            let cancelAction: UIAlertAction = UIAlertAction(title: "キャンセル", style: .cancel, handler:{
-                // ボタンが押された時の処理を書く（クロージャ実装）
-                (action: UIAlertAction!) -> Void in
-                print("Cancel")
-            })
-            deleteAlert.addAction(deleteAction)
-            deleteAlert.addAction(cancelAction)
-            //初期値を設定
-            self.pickerView.selectRow(0, inComponent: 0, animated: true)
-            self.pickerView.frame = CGRect(x: 0, y: 80, width: self.view.frame.width-145, height: 100)
-            self.pickerView.delegate = self
-            self.pickerView.dataSource = self
-            deleteAlert.view.addSubview(self.pickerView)
-            self.present(deleteAlert, animated: true, completion: nil)
+            let realm = try! Realm()
+            let realmData = realm.objects(RealmData.self)
+            if realmData[0].todoModel.count > 0 {
+                let deleteAlert: UIAlertController = UIAlertController(title: "カテゴリ削除", message: "削除したいカテゴリを選択してください\n\n\n\n\n\n\n\n", preferredStyle:  .alert)
+                let deleteAction: UIAlertAction = UIAlertAction(title: "OK", style: .default, handler:{
+                    // ボタンが押された時の処理を書く（クロージャ実装）
+                    (action: UIAlertAction!) -> Void in
+//                    let realm = try! Realm()
+                    // let realmData = realm.objects(TodoModel.self)
+//                    let realmData = realm.objects(RealmData.self)
+                    try! realm.write {
+                        realm.delete(realmData[0].todoModel[self.pickerRow].todoCentents)
+                        realm.delete(realmData[0].todoModel[self.pickerRow])
+                    }
+                    print("\n\n\n~realmData when Delete Category~\n\n\(realmData)")
+                    self.tableView.reloadData()
+                })
+                let cancelAction: UIAlertAction = UIAlertAction(title: "キャンセル", style: .cancel, handler:{
+                    // ボタンが押された時の処理を書く（クロージャ実装）
+                    (action: UIAlertAction!) -> Void in
+                    print("Cancel")
+                })
+                deleteAlert.addAction(deleteAction)
+                deleteAlert.addAction(cancelAction)
+                //初期値を設定
+                self.pickerView.selectRow(0, inComponent: 0, animated: true)
+                self.pickerView.frame = CGRect(x: 0, y: 80, width: self.view.frame.width-145, height: 100)
+                self.pickerView.delegate = self
+                self.pickerView.dataSource = self
+                deleteAlert.view.addSubview(self.pickerView)
+                self.present(deleteAlert, animated: true, completion: nil)
+            } else if realmData[0].todoModel.count == 0 {
+                let deleteAlert: UIAlertController = UIAlertController(title: "エラー", message: "削除するカテゴリが存在しません", preferredStyle:  .alert)
+                let deleteAction: UIAlertAction = UIAlertAction(title: "OK", style: .default, handler:{
+                    // ボタンが押された時の処理を書く（クロージャ実装）
+                    (action: UIAlertAction!) -> Void in
+                    print("delete error")
+                })
+                deleteAlert.addAction(deleteAction)
+                self.present(deleteAlert, animated: true, completion: nil)
+            } else {
+                print("category count error")
+            }
         })
         
         //キャンセルボタン
@@ -212,29 +227,6 @@ extension TableViewController {
 //        let realmData = realm.objects(TodoModel.self)
         let realmData = realm.objects(RealmData.self)
         
-//        // 最後の行の場合
-//        if indexPath.row == realmData[indexPath.section].cellCount-1 {
-//            // ボタンセルを表示する場合
-//            if realmData[indexPath.section].status {
-//                let cell = tableView.dequeueReusableCell(withIdentifier: "customCell", for: indexPath) as! TableViewCell
-//                cell.delegate = self
-//                return cell
-//            // テキストセルを表示する場合
-//            } else {
-//                let cell = tableView.dequeueReusableCell(withIdentifier: "customCell2", for: indexPath) as! TableViewCell2
-//                cell.delegate = self
-//                cell.textField.text = ""
-//                return cell
-//            }
-//        // 最後の行ではない場合
-//        } else {
-//            let cell = tableView.dequeueReusableCell(withIdentifier: "customCell2", for: indexPath) as! TableViewCell2
-//            let contents = realmData[indexPath.section].todoCentents[indexPath.row]
-//            cell.delegate = self
-//            cell.textField.text = contents.content
-//            return cell
-//        }
-        
         // 最後の行の場合
         if indexPath.row == realmData[0].todoModel[indexPath.section].cellCount-1 {
             // ボタンセルを表示する場合
@@ -270,7 +262,7 @@ extension TableViewController {
         header.section = section
         header.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(TableViewController.toggleCategoryHeader(gestureRecognizer: ))))
         header.setImage(isOpen: realmData[0].todoModel[section].open)
-        header.backgroundColor = UIColor(red: 255/255, green: 255/255, blue: 245/255, alpha: 1.0)
+        header.backgroundColor = UIColor(red: 150/255, green: 150/255, blue: 150/255, alpha: 0.3)
 //        print(header.label.text!)
 //        print(header.section)
         
@@ -278,7 +270,11 @@ extension TableViewController {
     }
     
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 50
+        return 40
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 45
     }
     
     // スワイプ削除の設定
