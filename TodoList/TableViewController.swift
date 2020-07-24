@@ -6,51 +6,53 @@
 //  Copyright © 2020 Swift-Biginners. All rights reserved.
 //
 
-import UIKit
+/* Main file */
 
-class TableViewController: UITableViewController, UIPickerViewDelegate, UIPickerViewDataSource, TableViewCellDelegate, TableViewCellDelegate2 {
+import UIKit
+import RealmSwift
+
+class TableViewController: UITableViewController, TableViewCellDelegate, TableViewCellDelegate2, UIPickerViewDelegate, UIPickerViewDataSource {
     
     let pickerView = UIPickerView()
-    
-    var TodoSection = ["1", "2", "3"]
-    var TodoContents = [["a", "b", "c"], ["d", "e", "f"], ["g", "h", "i"]]
-    var sectionOpen = [true, true, true]
-    var cellStatus = [true, true, true]
-    var cellCount = [4, 4, 4]
-    var pickerRow = 0
+    var pickerRow = 0 //PickerViewで取得するIndex
     
     @IBAction func categoryButton(_ sender: UIBarButtonItem) {
+        
         let alert: UIAlertController = UIAlertController(title: "カテゴリ編集", message: "操作を選択してください", preferredStyle:  .actionSheet)
         
         //カテゴリ追加
         let addCategory: UIAlertAction = UIAlertAction(title: "カテゴリ追加", style: .default, handler:{(action: UIAlertAction!) -> Void in
             let addAlert: UIAlertController = UIAlertController(title: "カテゴリ追加", message: "カテゴリ名を入力してください", preferredStyle:  .alert)
+            // OKボタン
             let addAction: UIAlertAction = UIAlertAction(title: "OK", style: .default, handler:{(action: UIAlertAction!) -> Void in
                 let textField = addAlert.textFields
                 if textField != nil {
                     for textField:UITextField in textField! {
                         if textField.text != nil {
-                            print(textField.text!)
-                            self.TodoSection.append(textField.text!)
-                            self.sectionOpen.append(true)
-                            self.cellStatus.append(true)
-                            self.TodoContents.append([])
-                            self.cellCount.append(1)
+//                            print(textField.text!)
+                            let realm = try! Realm()
+//                            let realmData = realm.objects(TodoModel.self)
+                            let realmData = realm.objects(RealmData.self)
+                            let model = TodoModel(value: ["name": textField.text!, "open": false, "status": true])
+                            try! realm.write {
+//                                realm.add()
+                                realmData[0].todoModel.append(model)
+                            }
+                            print("\n\n\n~realmData when Add Category~\n\n\(realmData)")
                             self.tableView.reloadData()
                         }
                     }
                 }
             })
+            // キャンセルボタン
             let cancelAction: UIAlertAction = UIAlertAction(title: "キャンセル", style: .cancel, handler:{
                 // ボタンが押された時の処理を書く（クロージャ実装）
                 (action: UIAlertAction!) -> Void in
                 print("Cancel")
             })
-            
             addAlert.addAction(addAction)
             addAlert.addAction(cancelAction)
             addAlert.addTextField(configurationHandler: nil)
-            
             self.present(addAlert, animated: true, completion: nil)
         })
         
@@ -60,11 +62,14 @@ class TableViewController: UITableViewController, UIPickerViewDelegate, UIPicker
             let deleteAction: UIAlertAction = UIAlertAction(title: "OK", style: .default, handler:{
                 // ボタンが押された時の処理を書く（クロージャ実装）
                 (action: UIAlertAction!) -> Void in
-                self.TodoSection.remove(at: self.pickerRow)
-                self.sectionOpen.remove(at: self.pickerRow)
-                self.cellStatus.remove(at: self.pickerRow)
-                self.TodoContents.remove(at: self.pickerRow)
-                self.cellCount.remove(at: self.pickerRow)
+                let realm = try! Realm()
+//                let realmData = realm.objects(TodoModel.self)
+                let realmData = realm.objects(RealmData.self)
+                try! realm.write {
+                    realm.delete(realmData[0].todoModel[self.pickerRow].todoCentents)
+                    realm.delete(realmData[0].todoModel[self.pickerRow])
+                }
+                print("\n\n\n~realmData when Delete Category~\n\n\(realmData)")
                 self.tableView.reloadData()
             })
             let cancelAction: UIAlertAction = UIAlertAction(title: "キャンセル", style: .cancel, handler:{
@@ -72,15 +77,14 @@ class TableViewController: UITableViewController, UIPickerViewDelegate, UIPicker
                 (action: UIAlertAction!) -> Void in
                 print("Cancel")
             })
-            
             deleteAlert.addAction(deleteAction)
             deleteAlert.addAction(cancelAction)
-            
             //初期値を設定
             self.pickerView.selectRow(0, inComponent: 0, animated: true)
             self.pickerView.frame = CGRect(x: 0, y: 80, width: self.view.frame.width-145, height: 100)
+            self.pickerView.delegate = self
+            self.pickerView.dataSource = self
             deleteAlert.view.addSubview(self.pickerView)
-            
             self.present(deleteAlert, animated: true, completion: nil)
         })
         
@@ -103,23 +107,226 @@ class TableViewController: UITableViewController, UIPickerViewDelegate, UIPicker
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
+//        deleteAll()
+        
+        let defaults = UserDefaults.standard
+        let realm = try! Realm()
+        
+        // 最初の初期値を設定
+        if defaults.object(forKey: "firstLaunch") as! Bool {
+            let realmData = RealmData()
+            let model = TodoModel(value: ["name": "やること", "open": false, "status": true])
+            realmData.todoModel.append(model)
+            try! realm.write {
+                realm.add(realmData)
+            }
+
+            defaults.set(false, forKey: "firstLaunch")
+        }
+        
         //カスタムセルの読み込み
         tableView.register(UINib(nibName: "TableViewCell", bundle: nil), forCellReuseIdentifier: "customCell")
         tableView.register(UINib(nibName: "TableViewCell2", bundle: nil), forCellReuseIdentifier: "customCell2")
+        
         tableView.tableFooterView = UIView(frame: .zero)
         tableView.allowsSelection = false
         
         navigationItem.rightBarButtonItem = editButtonItem
         
-        pickerView.delegate = self
-        pickerView.dataSource = self
+        print(Realm.Configuration.defaultConfiguration.fileURL)
+    }
+    
+    // ボタンセルからテキストセルに変更
+    func changeCell(cell: TableViewCell) {
+        let realm = try! Realm()
+        let realmData = realm.objects(TodoModel.self)
+        let indexPath = tableView.indexPath(for: cell)
+        
+        try! realm.write {
+            realmData[indexPath!.section].status = false
+        }
+        tableView.reloadData()
+    }
+    
+    // テキストの編集 or テキストの追加
+    func addCell(cell: TableViewCell2) {
+        let realm = try! Realm()
+//        let realmData = realm.objects(TodoModel.self)
+        let realmData = realm.objects(RealmData.self)
+        let indexPath = tableView.indexPath(for: cell)
+        let content = TodoCentents(value: ["content": cell.textField.text])
+        
+        // 最後の行の場合
+        if indexPath!.row == realmData[0].todoModel[indexPath!.section].cellCount-1 {
+            try! realm.write {
+                realmData[0].todoModel[indexPath!.section].cellCount += 1
+                realmData[0].todoModel[indexPath!.section].status = true
+                realmData[0].todoModel[indexPath!.section].todoCentents.append(content)
+            }
+        //最後の行以外の場合
+        } else {
+            try! realm.write {
+                realmData[0].todoModel[indexPath!.section].todoCentents[indexPath!.row] = content
+            }
+        }
+        print("\n\n\n~realmData when Add Contents or Edit Contents~\n\n\(realmData)")
+        tableView.reloadData()
+    }
+    
+    // データベース全削除
+    func deleteAll() {
+        let realm = try! Realm()
+        try! realm.write {
+            realm.deleteAll()
+        }
+    }
+
+}
+
+/*------------------------------------------------------*/
+
+// TableView Setting
+extension TableViewController {
+    
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        let realm = try! Realm()
+//        let realmData = realm.objects(TodoModel.self)
+        let realmData = realm.objects(RealmData.self)
+        
+//        return realmData.count
+        return realmData[0].todoModel.count
+    }
+    
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        let realm = try! Realm()
+//        let realmData = realm.objects(TodoModel.self)
+        let realmData = realm.objects(RealmData.self)
+        
+//        if realmData[section].open { return realmData[section].cellCount }
+        if realmData[0].todoModel[section].open { return realmData[0].todoModel[section].cellCount } // セクションが開いているとき
+        return 0 // セクションが閉じているとき
+    }
+    
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let realm = try! Realm()
+//        let realmData = realm.objects(TodoModel.self)
+        let realmData = realm.objects(RealmData.self)
+        
+//        // 最後の行の場合
+//        if indexPath.row == realmData[indexPath.section].cellCount-1 {
+//            // ボタンセルを表示する場合
+//            if realmData[indexPath.section].status {
+//                let cell = tableView.dequeueReusableCell(withIdentifier: "customCell", for: indexPath) as! TableViewCell
+//                cell.delegate = self
+//                return cell
+//            // テキストセルを表示する場合
+//            } else {
+//                let cell = tableView.dequeueReusableCell(withIdentifier: "customCell2", for: indexPath) as! TableViewCell2
+//                cell.delegate = self
+//                cell.textField.text = ""
+//                return cell
+//            }
+//        // 最後の行ではない場合
+//        } else {
+//            let cell = tableView.dequeueReusableCell(withIdentifier: "customCell2", for: indexPath) as! TableViewCell2
+//            let contents = realmData[indexPath.section].todoCentents[indexPath.row]
+//            cell.delegate = self
+//            cell.textField.text = contents.content
+//            return cell
+//        }
+        
+        // 最後の行の場合
+        if indexPath.row == realmData[0].todoModel[indexPath.section].cellCount-1 {
+            // ボタンセルを表示する場合
+            if realmData[0].todoModel[indexPath.section].status {
+                let cell = tableView.dequeueReusableCell(withIdentifier: "customCell", for: indexPath) as! TableViewCell
+                cell.delegate = self
+                return cell
+            // テキストセルを表示する場合
+            } else {
+                let cell = tableView.dequeueReusableCell(withIdentifier: "customCell2", for: indexPath) as! TableViewCell2
+                cell.delegate = self
+                cell.textField.text = ""
+                return cell
+            }
+        // 最後の行ではない場合
+        } else {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "customCell2", for: indexPath) as! TableViewCell2
+            let contents = realmData[0].todoModel[indexPath.section].todoCentents[indexPath.row]
+            cell.delegate = self
+            cell.textField.text = contents.content
+            return cell
+        }
+    }
+    
+    // ヘッダーの設定
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let realm = try! Realm()
+//        let realmData = realm.objects(TodoModel.self)
+        let realmData = realm.objects(RealmData.self)
+        let header = SectionHeaderView.instance()
+        
+        header.setTitle(title: realmData[0].todoModel[section].name)
+        header.section = section
+        header.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(TableViewController.toggleCategoryHeader(gestureRecognizer: ))))
+        header.setImage(isOpen: realmData[0].todoModel[section].open)
+        header.backgroundColor = UIColor(red: 255/255, green: 255/255, blue: 245/255, alpha: 1.0)
+//        print(header.label.text!)
+//        print(header.section)
+        
+        return header
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 50
+    }
+    
+    // スワイプ削除の設定
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        let realm = try! Realm()
+//        let realmData = realm.objects(TodoModel.self)
+        let realmData = realm.objects(RealmData.self)
+        
+        if indexPath.row == realmData[0].todoModel[indexPath.section].cellCount-1 {
+            return false
+        } else {
+            return true
+        }
+    }
+    
+    // セルの削除
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        let realm = try! Realm()
+//        let realmData = realm.objects(TodoModel.self)
+        let realmData = realm.objects(RealmData.self)
+        
+        try! realm.write {
+//            realmData[indexPath.section].todoCentents.remove(at: indexPath.row)
+            realmData[0].todoModel[indexPath.section].cellCount -= 1
+            realm.delete(realmData[0].todoModel[indexPath.section].todoCentents[indexPath.row])
+        }
+    
+        print("\n\n\n~realmData when Delete Contents~\n\n\(realmData)")
+        tableView.deleteRows(at: [indexPath], with: .automatic)
+    }
+    
+    // 編集モードの切り替え
+    override func setEditing(_ editing: Bool, animated: Bool) {
+        super.setEditing(editing, animated: animated)
+        tableView.isEditing = editing
     }
     
     //sectionがタップされたら呼び出される
     @objc func toggleCategoryHeader(gestureRecognizer: UITapGestureRecognizer) {
+//        let realm = try! Realm()
+//        let realmData = realm.objects(TodoModel.self)
         guard let header = gestureRecognizer.view as? SectionHeaderView else { return }
         //矢印の画像をnilに設定する(nilにしないと上下矢印が一瞬重なって見えてしまう)
         header.setImage(isOpen: nil)
+//        let isOepn = realmData[header.section].open
+//        try! realm.write {
+//            realmData[header.section].open = !isOepn
+//        }
         changeIsOpen(section: header.section)
         tableView.beginUpdates()
         tableView.reloadSections([header.section], with: UITableView.RowAnimation.fade)
@@ -128,112 +335,21 @@ class TableViewController: UITableViewController, UIPickerViewDelegate, UIPicker
     
     //sectionの状態を変更する関数
     func changeIsOpen(section: Int) {
-        let isOpen = sectionOpen[section]
-        sectionOpen[section] = !isOpen
-    }
-    
-    //sectionの中身の数をカウントする関数
-    func rowCount(section: Int) -> Int {
-        if TodoSection.count == 0 { return 0 }
-        // 開いているセクションだったらgenre分の個数を返す
-        if sectionOpen[section] { return cellCount[section] }
-        // 開いてないセクションだったら0
-        return 0
-    }
-    
-    func changeCell(cell: TableViewCell) {
-        let indexPath = tableView.indexPath(for: cell)
-        cellStatus[indexPath!.section] = false
-        tableView.reloadData()
-    }
-    
-    func addCell(cell: TableViewCell2) {
-        let indexPath = tableView.indexPath(for: cell)
-        if indexPath!.row == cellCount[indexPath!.section]-1 {
-            TodoContents[indexPath!.section].append(cell.textField.text!)
-            cellCount[indexPath!.section] += 1
-            cellStatus[indexPath!.section] = true
-    //        print(indexPath!)
-    //        print(indexPath!.section)
-    //        print(cellcount[indexPath!.section])
-        } else {
-            TodoContents[indexPath!.section][indexPath!.row] = cell.textField.text!
+        let realm = try! Realm()
+//        let realmData = realm.objects(TodoModel.self)
+        let realmData = realm.objects(RealmData.self)
+        
+        let isOpen = realmData[0].todoModel[section].open
+        try! realm.write {
+            realmData[0].todoModel[section].open = !isOpen
         }
-        tableView.reloadData()
-        print(TodoContents)
-    }
-
-}
-
-
-extension TableViewController {
-    
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        return TodoSection.count
-    }
-    
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return rowCount(section: section)
-    }
-    
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.row == cellCount[indexPath.section]-1 {
-            if cellStatus[indexPath.section] {
-                let cell = tableView.dequeueReusableCell(withIdentifier: "customCell", for: indexPath) as! TableViewCell
-                cell.delegate = self
-                return cell
-            } else {
-                let cell = tableView.dequeueReusableCell(withIdentifier: "customCell2", for: indexPath) as! TableViewCell2
-                cell.delegate = self
-                cell.textField.text = ""
-                return cell
-            }
-        } else {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "customCell2", for: indexPath) as! TableViewCell2
-            cell.delegate = self
-            cell.textField.text = TodoContents[indexPath.section][indexPath.row]
-            return cell
-        }
-    }
-    
-    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let header = SectionHeaderView.instance()
-        header.setTitle(title: TodoSection[section])
-        header.section = section
-        header.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(TableViewController.toggleCategoryHeader(gestureRecognizer: ))))
-        header.setImage(isOpen: sectionOpen[section])
-        header.backgroundColor = UIColor(red: 255/255, green: 255/255, blue: 245/255, alpha: 1.0)
-        print(header.label.text!)
-        print(header.section)
-        return header
-    }
-    
-    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 50
-    }
-    
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        if indexPath.row == cellCount[indexPath.section]-1 {
-            return false
-        } else {
-            return true
-        }
-    }
-    
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        TodoContents[indexPath.section].remove(at: indexPath.row)
-        cellCount[indexPath.section] -= 1
-        tableView.deleteRows(at: [indexPath], with: .automatic)
-    }
-    
-    override func setEditing(_ editing: Bool, animated: Bool) {
-        super.setEditing(editing, animated: animated)
-        tableView.isEditing = editing
     }
     
 }
 
+/*------------------------------------------------------*/
 
+// PickerView Setting
 extension TableViewController {
     
     // PickerViewの列数
@@ -243,12 +359,21 @@ extension TableViewController {
 
     // PickerViewの行数
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return TodoSection.count
+        let realm = try! Realm()
+//        let realmData = realm.objects(TodoModel.self)
+        let realmData = realm.objects(RealmData.self)
+        
+        return realmData[0].todoModel.count
     }
     
     // PickerViewの項目
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return TodoSection[row]
+        let realm = try! Realm()
+//        let realmData = realm.objects(TodoModel.self)
+        let realmData = realm.objects(RealmData.self)
+        
+        print("\npicker view name[\(row)]:\n\(realmData[0].todoModel[row])")
+        return realmData[0].todoModel[row].name
     }
     
     // PickerViewの項目選択時
