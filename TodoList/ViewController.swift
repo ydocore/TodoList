@@ -1,21 +1,21 @@
 //
-//  TableViewController.swift
+//  ViewController.swift
 //  TodoList
 //
-//  Created by 加瀬裕大 on 2020/04/27.
+//  Created by 加瀬裕大 on 2020/07/24.
 //  Copyright © 2020 Swift-Biginners. All rights reserved.
 //
-
-/* Main file */
 
 import UIKit
 import RealmSwift
 
-class TableViewController: UITableViewController, TableViewCellDelegate, TableViewCellDelegate2, UIPickerViewDelegate, UIPickerViewDataSource {
+class ViewController: UIViewController, TableViewCellDelegate, TableViewCellDelegate2, UIPickerViewDelegate, UIPickerViewDataSource, UITableViewDelegate, UITableViewDataSource {
     
     let pickerView = UIPickerView()
     var pickerRow = 0 //PickerViewで取得するIndex
     
+    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var label: UILabel!
     @IBAction func categoryButton(_ sender: UIBarButtonItem) {
         
         let alert: UIAlertController = UIAlertController(title: "カテゴリ編集", message: "操作を選択してください", preferredStyle:  .actionSheet)
@@ -126,7 +126,6 @@ class TableViewController: UITableViewController, TableViewCellDelegate, TableVi
         
         let defaults = UserDefaults.standard
         let realm = try! Realm()
-        
         // 最初の初期値を設定
         if defaults.object(forKey: "firstLaunch") as! Bool {
             let realmData = RealmData()
@@ -139,12 +138,21 @@ class TableViewController: UITableViewController, TableViewCellDelegate, TableVi
             defaults.set(false, forKey: "firstLaunch")
         }
         
+        let realmData = realm.objects(RealmData.self)
+        if realmData[0].todoModel.count == 0 {
+            label.isHidden = false
+        } else {
+            label.isHidden = true
+        }
+        
         //カスタムセルの読み込み
         tableView.register(UINib(nibName: "TableViewCell", bundle: nil), forCellReuseIdentifier: "customCell")
         tableView.register(UINib(nibName: "TableViewCell2", bundle: nil), forCellReuseIdentifier: "customCell2")
-        
         tableView.tableFooterView = UIView(frame: .zero)
         tableView.allowsSelection = false
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.backgroundColor = UIColor.clear
         
         navigationItem.rightBarButtonItem = editButtonItem
         
@@ -154,11 +162,11 @@ class TableViewController: UITableViewController, TableViewCellDelegate, TableVi
     // ボタンセルからテキストセルに変更
     func changeCell(cell: TableViewCell) {
         let realm = try! Realm()
-        let realmData = realm.objects(TodoModel.self)
+        let realmData = realm.objects(RealmData.self)
         let indexPath = tableView.indexPath(for: cell)
         
         try! realm.write {
-            realmData[indexPath!.section].status = false
+            realmData[0].todoModel[indexPath!.section].status = false
         }
         tableView.reloadData()
     }
@@ -201,18 +209,22 @@ class TableViewController: UITableViewController, TableViewCellDelegate, TableVi
 /*------------------------------------------------------*/
 
 // TableView Setting
-extension TableViewController {
+extension ViewController {
     
-    override func numberOfSections(in tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         let realm = try! Realm()
 //        let realmData = realm.objects(TodoModel.self)
         let realmData = realm.objects(RealmData.self)
-        
+        if realmData[0].todoModel.count == 0 {
+            label.isHidden = false
+        } else {
+            label.isHidden = true
+        }
 //        return realmData.count
         return realmData[0].todoModel.count
     }
     
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let realm = try! Realm()
 //        let realmData = realm.objects(TodoModel.self)
         let realmData = realm.objects(RealmData.self)
@@ -222,7 +234,7 @@ extension TableViewController {
         return 0 // セクションが閉じているとき
     }
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let realm = try! Realm()
 //        let realmData = realm.objects(TodoModel.self)
         let realmData = realm.objects(RealmData.self)
@@ -232,11 +244,13 @@ extension TableViewController {
             // ボタンセルを表示する場合
             if realmData[0].todoModel[indexPath.section].status {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "customCell", for: indexPath) as! TableViewCell
+                cell.backgroundColor = UIColor.clear
                 cell.delegate = self
                 return cell
             // テキストセルを表示する場合
             } else {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "customCell2", for: indexPath) as! TableViewCell2
+                cell.backgroundColor = UIColor.clear
                 cell.delegate = self
                 cell.textField.text = ""
                 return cell
@@ -245,6 +259,7 @@ extension TableViewController {
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: "customCell2", for: indexPath) as! TableViewCell2
             let contents = realmData[0].todoModel[indexPath.section].todoCentents[indexPath.row]
+            cell.backgroundColor = UIColor.clear
             cell.delegate = self
             cell.textField.text = contents.content
             return cell
@@ -252,7 +267,7 @@ extension TableViewController {
     }
     
     // ヘッダーの設定
-    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let realm = try! Realm()
 //        let realmData = realm.objects(TodoModel.self)
         let realmData = realm.objects(RealmData.self)
@@ -269,16 +284,16 @@ extension TableViewController {
         return header
     }
     
-    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 40
     }
     
-    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 45
     }
     
     // スワイプ削除の設定
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         let realm = try! Realm()
 //        let realmData = realm.objects(TodoModel.self)
         let realmData = realm.objects(RealmData.self)
@@ -291,7 +306,7 @@ extension TableViewController {
     }
     
     // セルの削除
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         let realm = try! Realm()
 //        let realmData = realm.objects(TodoModel.self)
         let realmData = realm.objects(RealmData.self)
@@ -346,7 +361,7 @@ extension TableViewController {
 /*------------------------------------------------------*/
 
 // PickerView Setting
-extension TableViewController {
+extension ViewController {
     
     // PickerViewの列数
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
