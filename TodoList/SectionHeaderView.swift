@@ -6,6 +6,8 @@
 //  Copyright © 2020 Swift-Biginners. All rights reserved.
 //
 
+/* Section header setting */
+
 import UIKit
 
 class SectionHeaderView: UIView {

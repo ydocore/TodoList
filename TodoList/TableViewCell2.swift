@@ -6,6 +6,8 @@
 //  Copyright © 2020 Swift-Biginners. All rights reserved.
 //
 
+/* Text cell setting */
+
 import UIKit
 
 protocol TableViewCellDelegate2 {
