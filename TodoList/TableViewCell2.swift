@@ -33,9 +33,14 @@ class TableViewCell2: UITableViewCell, UITextFieldDelegate {
         // Configure the view for the selected state
     }
     
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.textField.endEditing(true)
+    }
+    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         let cell = (textField.superview?.superview as? TableViewCell2)!
         self.delegate?.addCell(cell: cell)
+        textField.endEditing(true)
 //        print(cell)
         return true
     }

@@ -84,7 +84,8 @@ class ViewController: UIViewController, TableViewCellDelegate, TableViewCellDele
                 deleteAlert.addAction(cancelAction)
                 //初期値を設定
                 self.pickerView.selectRow(0, inComponent: 0, animated: true)
-                self.pickerView.frame = CGRect(x: 0, y: 80, width: self.view.frame.width-145, height: 100)
+//                self.pickerView.frame = CGRect(x: 0, y: 80, width: self.view.frame.width-145, height: 100)
+                self.pickerView.frame = CGRect(x: 0, y: 80, width: deleteAlert.view.bounds.width, height: 100)
                 self.pickerView.delegate = self
                 self.pickerView.dataSource = self
                 deleteAlert.view.addSubview(self.pickerView)
@@ -155,6 +156,7 @@ class ViewController: UIViewController, TableViewCellDelegate, TableViewCellDele
         tableView.backgroundColor = UIColor.clear
         
         navigationItem.rightBarButtonItem = editButtonItem
+        navigationController!.navigationBar.setBackgroundImage(UIImage(), for: .default)
         
         print(Realm.Configuration.defaultConfiguration.fileURL)
     }
@@ -278,6 +280,8 @@ extension ViewController {
         header.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(TableViewController.toggleCategoryHeader(gestureRecognizer: ))))
         header.setImage(isOpen: realmData[0].todoModel[section].open)
         header.backgroundColor = UIColor(red: 150/255, green: 150/255, blue: 150/255, alpha: 0.3)
+        header.layer.borderColor = UIColor.black.cgColor
+        header.layer.borderWidth = 1
 //        print(header.label.text!)
 //        print(header.section)
         
