@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="B1c-nh-ID6">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097.2" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="B1c-nh-ID6">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -82,9 +82,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.59999999999999998" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="p0029_m" translatesAutoresizingMaskIntoConstraints="NO" id="Cfu-fq-BxO">
-                                <rect key="frame" x="0.0" y="88" width="414" height="774"/>
-                            </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="カテゴリを追加して ください" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="MSn-td-lhX">
                                 <rect key="frame" x="0.0" y="385" width="414" height="126"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -92,6 +89,9 @@
                                 <color key="textColor" red="0.66211309287753806" green="0.65891447890228427" blue="0.66531170685279184" alpha="0.84705882352941175" colorSpace="custom" customColorSpace="displayP3"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.59999999999999998" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="p0029_m" translatesAutoresizingMaskIntoConstraints="NO" id="Cfu-fq-BxO">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                            </imageView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="TEQ-W8-9hR">
                                 <rect key="frame" x="0.0" y="88" width="414" height="774"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
@@ -109,12 +109,12 @@
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
-                            <constraint firstItem="Cfu-fq-BxO" firstAttribute="top" secondItem="jJD-Af-8gM" secondAttribute="top" id="4Ka-br-ngf"/>
+                            <constraint firstItem="Cfu-fq-BxO" firstAttribute="top" secondItem="jJD-Af-8gM" secondAttribute="top" constant="-88" id="4Ka-br-ngf"/>
                             <constraint firstItem="jJD-Af-8gM" firstAttribute="trailing" secondItem="Cfu-fq-BxO" secondAttribute="trailing" id="DTU-1x-2gC"/>
                             <constraint firstItem="TEQ-W8-9hR" firstAttribute="top" secondItem="jJD-Af-8gM" secondAttribute="top" id="E2o-d1-bQG"/>
                             <constraint firstItem="jJD-Af-8gM" firstAttribute="bottom" secondItem="TEQ-W8-9hR" secondAttribute="bottom" id="JhL-2g-dod"/>
                             <constraint firstItem="TEQ-W8-9hR" firstAttribute="leading" secondItem="jJD-Af-8gM" secondAttribute="leading" id="Q6J-Rj-wlR"/>
-                            <constraint firstItem="jJD-Af-8gM" firstAttribute="bottom" secondItem="Cfu-fq-BxO" secondAttribute="bottom" id="cxs-gC-uKw"/>
+                            <constraint firstItem="jJD-Af-8gM" firstAttribute="bottom" secondItem="Cfu-fq-BxO" secondAttribute="bottom" constant="-34" id="cxs-gC-uKw"/>
                             <constraint firstItem="jJD-Af-8gM" firstAttribute="trailing" secondItem="TEQ-W8-9hR" secondAttribute="trailing" id="t5M-Wm-dv9"/>
                             <constraint firstItem="Cfu-fq-BxO" firstAttribute="leading" secondItem="jJD-Af-8gM" secondAttribute="leading" id="zOo-yY-dv2"/>
                         </constraints>
@@ -134,7 +134,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="EzB-kk-fUF" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="183" y="992"/>
+            <point key="canvasLocation" x="182.60869565217394" y="991.74107142857133"/>
         </scene>
     </scenes>
     <resources>
