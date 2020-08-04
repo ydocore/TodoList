@@ -82,16 +82,12 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="カテゴリを追加して ください" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="MSn-td-lhX">
-                                <rect key="frame" x="0.0" y="385" width="414" height="126"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <label opaque="NO" userInteractionEnabled="NO" alpha="0.40000000000000002" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="カテゴリを追加して ください" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="E8x-gd-EER">
+                                <rect key="frame" x="0.0" y="88" width="414" height="774"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="38"/>
-                                <color key="textColor" red="0.66211309287753806" green="0.65891447890228427" blue="0.66531170685279184" alpha="0.84705882352941175" colorSpace="custom" customColorSpace="displayP3"/>
+                                <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.59999999999999998" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="p0029_m" translatesAutoresizingMaskIntoConstraints="NO" id="Cfu-fq-BxO">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                            </imageView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="TEQ-W8-9hR">
                                 <rect key="frame" x="0.0" y="88" width="414" height="774"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
@@ -109,14 +105,14 @@
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
-                            <constraint firstItem="Cfu-fq-BxO" firstAttribute="top" secondItem="jJD-Af-8gM" secondAttribute="top" constant="-88" id="4Ka-br-ngf"/>
-                            <constraint firstItem="jJD-Af-8gM" firstAttribute="trailing" secondItem="Cfu-fq-BxO" secondAttribute="trailing" id="DTU-1x-2gC"/>
-                            <constraint firstItem="TEQ-W8-9hR" firstAttribute="top" secondItem="jJD-Af-8gM" secondAttribute="top" id="E2o-d1-bQG"/>
-                            <constraint firstItem="jJD-Af-8gM" firstAttribute="bottom" secondItem="TEQ-W8-9hR" secondAttribute="bottom" id="JhL-2g-dod"/>
-                            <constraint firstItem="TEQ-W8-9hR" firstAttribute="leading" secondItem="jJD-Af-8gM" secondAttribute="leading" id="Q6J-Rj-wlR"/>
-                            <constraint firstItem="jJD-Af-8gM" firstAttribute="bottom" secondItem="Cfu-fq-BxO" secondAttribute="bottom" constant="-34" id="cxs-gC-uKw"/>
-                            <constraint firstItem="jJD-Af-8gM" firstAttribute="trailing" secondItem="TEQ-W8-9hR" secondAttribute="trailing" id="t5M-Wm-dv9"/>
-                            <constraint firstItem="Cfu-fq-BxO" firstAttribute="leading" secondItem="jJD-Af-8gM" secondAttribute="leading" id="zOo-yY-dv2"/>
+                            <constraint firstItem="TEQ-W8-9hR" firstAttribute="leading" secondItem="jJD-Af-8gM" secondAttribute="leading" id="6ic-Ql-wJx"/>
+                            <constraint firstItem="TEQ-W8-9hR" firstAttribute="trailing" secondItem="jJD-Af-8gM" secondAttribute="trailing" id="CQh-Se-Px6"/>
+                            <constraint firstItem="TEQ-W8-9hR" firstAttribute="bottom" secondItem="jJD-Af-8gM" secondAttribute="bottom" id="CV0-8a-d2r"/>
+                            <constraint firstItem="E8x-gd-EER" firstAttribute="leading" secondItem="jJD-Af-8gM" secondAttribute="leading" id="Lk0-pP-uQC"/>
+                            <constraint firstItem="E8x-gd-EER" firstAttribute="trailing" secondItem="jJD-Af-8gM" secondAttribute="trailing" id="d76-GR-Eyv"/>
+                            <constraint firstItem="TEQ-W8-9hR" firstAttribute="top" secondItem="jJD-Af-8gM" secondAttribute="top" id="lzQ-4s-AKW"/>
+                            <constraint firstItem="jJD-Af-8gM" firstAttribute="bottom" secondItem="E8x-gd-EER" secondAttribute="bottom" id="mqD-v2-Fwa"/>
+                            <constraint firstItem="E8x-gd-EER" firstAttribute="top" secondItem="jJD-Af-8gM" secondAttribute="top" id="vyI-GF-pYP"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="jJD-Af-8gM"/>
                     </view>
@@ -128,7 +124,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="label" destination="MSn-td-lhX" id="RFL-HX-QEn"/>
+                        <outlet property="label" destination="E8x-gd-EER" id="oyg-ah-I4B"/>
                         <outlet property="tableView" destination="TEQ-W8-9hR" id="1xx-oF-DC4"/>
                     </connections>
                 </viewController>
@@ -137,7 +133,4 @@
             <point key="canvasLocation" x="182.60869565217394" y="991.74107142857133"/>
         </scene>
     </scenes>
-    <resources>
-        <image name="p0029_m" width="640" height="881"/>
-    </resources>
 </document>
