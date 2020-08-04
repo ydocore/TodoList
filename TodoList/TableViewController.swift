@@ -12,6 +12,11 @@ import UIKit
 import RealmSwift
 
 class TableViewController: UITableViewController, TableViewCellDelegate, TableViewCellDelegate2, UIPickerViewDelegate, UIPickerViewDataSource {
+    func backCell(cell: TableViewCell2) {
+        print("a")
+    }
+    
+    
     
     let pickerView = UIPickerView()
     var pickerRow = 0 //PickerViewで取得するIndex

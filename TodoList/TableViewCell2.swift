@@ -14,7 +14,7 @@ protocol TableViewCellDelegate2 {
     func addCell(cell: TableViewCell2)
 }
 
-class TableViewCell2: UITableViewCell, UITextFieldDelegate {
+class TableViewCell2: UITableViewCell, UITextFieldDelegate, TableViewCellDelegate {
     
     var delegate: TableViewCellDelegate2?
 
@@ -39,10 +39,14 @@ class TableViewCell2: UITableViewCell, UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         let cell = (textField.superview?.superview as? TableViewCell2)!
+        
         self.delegate?.addCell(cell: cell)
         textField.endEditing(true)
-//        print(cell)
         return true
+    }
+    
+    func changeCell(cell: TableViewCell) {
+        textField.becomeFirstResponder()
     }
     
 }

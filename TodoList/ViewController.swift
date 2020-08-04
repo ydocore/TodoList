@@ -183,10 +183,16 @@ class ViewController: UIViewController, TableViewCellDelegate, TableViewCellDele
         
         // 最後の行の場合
         if indexPath!.row == realmData[0].todoModel[indexPath!.section].cellCount-1 {
-            try! realm.write {
-                realmData[0].todoModel[indexPath!.section].cellCount += 1
-                realmData[0].todoModel[indexPath!.section].status = true
-                realmData[0].todoModel[indexPath!.section].todoCentents.append(content)
+            if cell.textField!.text != "" {
+                try! realm.write {
+                    realmData[0].todoModel[indexPath!.section].cellCount += 1
+                    realmData[0].todoModel[indexPath!.section].status = true
+                    realmData[0].todoModel[indexPath!.section].todoCentents.append(content)
+                }
+            } else {
+                try! realm.write {
+                    realmData[0].todoModel[indexPath!.section].status = true
+                }
             }
         //最後の行以外の場合
         } else {
