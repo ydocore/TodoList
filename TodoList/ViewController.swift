@@ -261,6 +261,7 @@ extension ViewController {
                 cell.backgroundColor = UIColor.clear
                 cell.delegate = self
                 cell.textField.text = ""
+                cell.textField.becomeFirstResponder()
                 return cell
             }
         // 最後の行ではない場合
