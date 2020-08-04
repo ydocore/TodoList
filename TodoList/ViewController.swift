@@ -85,7 +85,7 @@ class ViewController: UIViewController, TableViewCellDelegate, TableViewCellDele
                 //初期値を設定
                 self.pickerView.selectRow(0, inComponent: 0, animated: true)
 //                self.pickerView.frame = CGRect(x: 0, y: 80, width: self.view.frame.width-145, height: 100)
-                self.pickerView.frame = CGRect(x: 0, y: 80, width: deleteAlert.view.bounds.width, height: 100)
+                self.pickerView.frame = CGRect(x: 0, y: 50, width: 270, height: 150)
                 self.pickerView.delegate = self
                 self.pickerView.dataSource = self
                 deleteAlert.view.addSubview(self.pickerView)
