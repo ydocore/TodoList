@@ -11,6 +11,7 @@
 import UIKit
 
 protocol TableViewCellDelegate2 {
+//    func editCell(cell: TableViewCell2)
     func addCell(cell: TableViewCell2)
 }
 
@@ -37,9 +38,20 @@ class TableViewCell2: UITableViewCell, UITextFieldDelegate {
         self.textField.endEditing(true)
     }
     
+//    func textFieldDidBeginEditing(_ textField: UITextField) {
+//      let cell = (textField.superview?.superview as? TableViewCell2)!
+//      self.delegate?.editCell(cell: cell)
+//    }
+    
+//    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+//        let cell = (textField.superview?.superview as? TableViewCell2)!
+//        self.delegate?.editCell(cell: cell)
+//        textField.becomeFirstResponder()
+//        return true
+//    }
+    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         let cell = (textField.superview?.superview as? TableViewCell2)!
-        
         self.delegate?.addCell(cell: cell)
         textField.endEditing(true)
         return true
