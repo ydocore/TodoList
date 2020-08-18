@@ -14,8 +14,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     let pickerView = UIPickerView()
     var pickerRow = 0 //PickerViewで取得するIndex
     var tapLocation: CGPoint = CGPoint()
-    var cellRect: CGRect = CGRect()
     var cellBottom = true
+    var cellRect: CGRect = CGRect()
+    var lastCell = false
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var label: UILabel!
@@ -220,7 +221,13 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let height: CGFloat = CGFloat(50*sectionCount + 44*cellCount)
         
         if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-            let tapCell = cellRect.origin.y + cellRect.height
+            var tapCell: CGFloat = CGFloat()
+            if lastCell {
+                tapCell = cellRect.origin.y + cellRect.height
+            } else {
+                let rect = tableView.convert(editCell.frame, to: self.view)
+                tapCell = rect.origin.y + rect.height
+            }
             if tapCell > view.frame.height - keyboardSize.height {
                 print("View Up!")
                 let heightDifference = tapCell - (view.frame.height - keyboardSize.height)
@@ -229,6 +236,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 }
             }
             cellRect = CGRect(x:0,y:0,width:0,height:0)
+            lastCell = false
 //            if height > view.frame.height-(keyboardSize.height+100) && height <= view.frame.height-100 {
 //                print("画面内")
 //                let heightDifference = (keyboardSize.height+100) - (view.frame.height-height)
@@ -508,6 +516,7 @@ extension ViewController: TableViewCellDelegate, TableViewCellDelegate2 {
         try! realm.write {
             realmData[0].todoModel[indexPath!.section].status = false
         }
+        lastCell = true
         tableView.reloadData()
 //        DispatchQueue.main.async {
 //            self.tableView.scrollToRow(at: indexPath!, at: UITableView.ScrollPosition.bottom, animated: false)
