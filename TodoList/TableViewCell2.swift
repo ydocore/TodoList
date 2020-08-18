@@ -38,16 +38,22 @@ class TableViewCell2: UITableViewCell, UITextFieldDelegate {
         self.textField.endEditing(true)
     }
     
-//    func textFieldDidBeginEditing(_ textField: UITextField) {
-//      let cell = (textField.superview?.superview as? TableViewCell2)!
-//      self.delegate?.editCell(cell: cell)
-//    }
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+      let cell = (textField.superview?.superview as? TableViewCell2)!
+      editCell = cell
+    }
     
 //    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
 //        let cell = (textField.superview?.superview as? TableViewCell2)!
 //        self.delegate?.editCell(cell: cell)
 //        textField.becomeFirstResponder()
 //        return true
+//    }
+    
+//    func textFieldDidBeginEditing(_ textField: UITextField) {
+//        let cell = (textField.superview?.superview as? TableViewCell2)!
+//        self.delegate?.addCell(cell: cell)
+//        print("テキストフィールド入力状態後")
 //    }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
