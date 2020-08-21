@@ -22,6 +22,7 @@
 		210DDBB924CB1A7800A16F15 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 210DDBB824CB1A7800A16F15 /* ViewController.swift */; };
 		2141A0FB2456D5120006BDF7 /* TableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2141A0FA2456D5120006BDF7 /* TableViewController.swift */; };
 		21A7F81224EB9A320064622B /* GlobalVariable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21A7F81124EB9A320064622B /* GlobalVariable.swift */; };
+		21AD7A7024EE6BF800FF28B3 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 21AD7A6F24EE6BF700FF28B3 /* GoogleService-Info.plist */; };
 		98F58D20AB6E0146E1C2C12D /* Pods_TodoList.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9875204A98DCCC0B970DBDE5 /* Pods_TodoList.framework */; };
 /* End PBXBuildFile section */
 
@@ -44,6 +45,7 @@
 		210DDBB824CB1A7800A16F15 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		2141A0FA2456D5120006BDF7 /* TableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewController.swift; sourceTree = "<group>"; };
 		21A7F81124EB9A320064622B /* GlobalVariable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalVariable.swift; sourceTree = "<group>"; };
+		21AD7A6F24EE6BF700FF28B3 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		9875204A98DCCC0B970DBDE5 /* Pods_TodoList.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TodoList.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED44A700352E4B46306A6D90 /* Pods-TodoList.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TodoList.release.xcconfig"; path = "Target Support Files/Pods-TodoList/Pods-TodoList.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -97,6 +99,7 @@
 				210105C12434D6FF00F9135E /* Assets.xcassets */,
 				210105C32434D6FF00F9135E /* LaunchScreen.storyboard */,
 				210105C62434D6FF00F9135E /* Info.plist */,
+				21AD7A6F24EE6BF700FF28B3 /* GoogleService-Info.plist */,
 			);
 			path = TodoList;
 			sourceTree = "<group>";
@@ -184,6 +187,7 @@
 				210105C02434D6FE00F9135E /* Main.storyboard in Resources */,
 				21038C23247553CC00D79668 /* TableViewCell2.xib in Resources */,
 				21038C1B2475512B00D79668 /* SectionHeaderView.xib in Resources */,
+				21AD7A7024EE6BF800FF28B3 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
