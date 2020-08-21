@@ -480,9 +480,16 @@ extension ViewController {
     
     //sectionがタップされたら呼び出される
     @objc func toggleCategoryHeader(gestureRecognizer: UITapGestureRecognizer) {
-//        let realm = try! Realm()
+        let realm = try! Realm()
+        let realmData = realm.objects(RealmData.self)
 //        let realmData = realm.objects(TodoModel.self)
         guard let header = gestureRecognizer.view as? SectionHeaderView else { return }
+        if !realmData[0].todoModel[header.section].status {
+            try! realm.write {
+                realmData[0].todoModel[header.section].status = true
+            }
+            self.view.endEditing(true)
+        }
         //矢印の画像をnilに設定する(nilにしないと上下矢印が一瞬重なって見えてしまう)
         header.setImage(isOpen: nil)
 //        let isOepn = realmData[header.section].open
@@ -615,18 +622,19 @@ extension ViewController: TableViewCellDelegate, TableViewCellDelegate2 {
                     realmData[0].todoModel[indexPath!.section].status = true
                     realmData[0].todoModel[indexPath!.section].todoCentents.append(content)
                 }
+                tableView.reloadData()
+                if indexPath?.section == realmData[0].todoModel.count-1 {
+                    DispatchQueue.main.async {
+                        print("reload")
+                        indexPath?.row += 1
+                        self.tableView.scrollToRow(at: indexPath!, at: UITableView.ScrollPosition.bottom, animated: false)
+                    }
+                }
             } else {
                 try! realm.write {
                     realmData[0].todoModel[indexPath!.section].status = true
                 }
-            }
-            tableView.reloadData()
-            if indexPath?.section == realmData[0].todoModel.count-1 {
-                DispatchQueue.main.async {
-                    print("reload")
-                    indexPath?.row += 1
-                    self.tableView.scrollToRow(at: indexPath!, at: UITableView.ScrollPosition.bottom, animated: false)
-                }
+                tableView.reloadData()
             }
 //            DispatchQueue.main.async {
 //                print("reload")
