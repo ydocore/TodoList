@@ -8,6 +8,7 @@
 
 import UIKit
 import RealmSwift
+import GoogleMobileAds
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
@@ -18,6 +19,18 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var cellRect: CGRect = CGRect()
     var lastCell = false
     
+    // 広告ユニットID
+    let AdMobID = "[Your AdMob ID]"
+    // テスト用広告ユニットID
+    let TEST_ID = "ca-app-pub-3940256099942544/2934735716"
+    // true:テスト
+    let AdMobTest:Bool = true
+    var topPadding:CGFloat = 0
+    var bottomPadding:CGFloat = 0
+    var leftPadding:CGFloat = 0
+    var rightPadding:CGFloat = 0
+
+    @IBOutlet weak var bannerView: GADBannerView!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var label: UILabel!
     @IBAction func categoryButton(_ sender: UIBarButtonItem) {
@@ -159,6 +172,26 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         tableView.dataSource = self
         tableView.backgroundColor = UIColor.clear
         
+//        var admobView = GADBannerView()
+//
+//        bannerView = GADBannerView(adSize:kGADAdSizeBanner)
+//        // iPhone X のポートレート決め打ちです
+//        admobView.frame.origin = CGPoint(x:0, y:self.view.frame.size.height - admobView.frame.height - 34)
+//        admobView.frame.size = CGSize(width:self.view.frame.width, height:admobView.frame.height)
+//        print(admobView.frame.height)
+        
+        if AdMobTest {
+            bannerView.adUnitID = TEST_ID
+        }
+        else{
+            bannerView.adUnitID = AdMobID
+        }
+        
+        bannerView.rootViewController = self
+        bannerView.load(GADRequest())
+        
+//        self.view.addSubview(admobView)
+        
         navigationItem.rightBarButtonItem = editButtonItem
 //        navigationController!.navigationBar.setBackgroundImage(UIImage(), for: .default)
         
@@ -166,7 +199,43 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         
         print(Realm.Configuration.defaultConfiguration.fileURL)
+        print("Google Mobile Ads SDK version: \(GADRequest.sdkVersion())")
     }
+    
+    override func viewDidLayoutSubviews() {
+        print(self.view.safeAreaInsets.bottom)
+//        NotificationCenter.default.addObserver(self,
+//            selector: #selector(self.checkSafeArea(notification:)),
+//            name: UIDevice.orientationDidChangeNotification, object: nil)
+    }
+    
+//    @objc func checkSafeArea(notification: NSNotification){
+//        // 画面の横幅を取得
+//        // 以降、Landscape のみを想定
+//        let screenWidth:CGFloat = view.frame.size.width
+//        let screenHeight:CGFloat = view.frame.size.height
+//
+//        if #available(iOS 13, *) {
+//            let window = UIApplication.shared.connectedScenes
+//            .filter({$0.activationState == .foregroundActive})
+//            .map({$0 as? UIWindowScene})
+//            .compactMap({$0})
+//            .first?
+//            .windows
+//            .filter({$0.isKeyWindow})
+//            .first
+//
+//            topPadding = window!.safeAreaInsets.top
+//            bottomPadding = window!.safeAreaInsets.bottom
+//            leftPadding = window!.safeAreaInsets.left
+//            rightPadding = window!.safeAreaInsets.right
+//
+//            print("topPadding = \(topPadding)")
+//            print("bottomPadding = \(bottomPadding)")
+//            print("leftPadding = \(leftPadding)")
+//            print("rightPadding = \(rightPadding)")
+//        }
+//    }
     
 //    @objc func keyboardWillShow(notification: NSNotification) {
 //        let realm = try! Realm()

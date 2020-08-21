@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -19,6 +20,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // 初回かどうかを保持
         let defaults = UserDefaults.standard
         defaults.register(defaults: ["firstLaunch": true])
+        
+        FirebaseApp.configure()
+        GADMobileAds.sharedInstance().start(completionHandler: nil)
         
         return true
     }

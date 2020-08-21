@@ -58,6 +58,21 @@
             </objects>
             <point key="canvasLocation" x="-735" y="261"/>
         </scene>
+        <!--View Controller-->
+        <scene sceneID="bKT-wa-42j">
+            <objects>
+                <viewController id="H08-kU-aIq" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="j6g-dg-RSK">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <viewLayoutGuide key="safeArea" id="6ji-5n-Y8s"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="x2h-rO-4Mw" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1411.5942028985507" y="984.375"/>
+        </scene>
         <!--Navigation Controller-->
         <scene sceneID="niN-ek-YEe">
             <objects>
@@ -89,7 +104,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="TEQ-W8-9hR">
-                                <rect key="frame" x="0.0" y="88" width="414" height="774"/>
+                                <rect key="frame" x="0.0" y="88" width="414" height="724"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="cell" id="Od2-Ya-74F">
@@ -102,16 +117,24 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="AfD-l4-ovS" customClass="GADBannerView">
+                                <rect key="frame" x="0.0" y="812" width="414" height="50"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
                             <constraint firstItem="TEQ-W8-9hR" firstAttribute="leading" secondItem="jJD-Af-8gM" secondAttribute="leading" id="6ic-Ql-wJx"/>
                             <constraint firstItem="TEQ-W8-9hR" firstAttribute="trailing" secondItem="jJD-Af-8gM" secondAttribute="trailing" id="CQh-Se-Px6"/>
-                            <constraint firstItem="TEQ-W8-9hR" firstAttribute="bottom" secondItem="jJD-Af-8gM" secondAttribute="bottom" id="CV0-8a-d2r"/>
+                            <constraint firstItem="TEQ-W8-9hR" firstAttribute="bottom" secondItem="jJD-Af-8gM" secondAttribute="bottom" constant="-50" id="CV0-8a-d2r"/>
+                            <constraint firstItem="AfD-l4-ovS" firstAttribute="bottom" secondItem="jJD-Af-8gM" secondAttribute="bottom" id="EE7-tg-6li"/>
+                            <constraint firstItem="AfD-l4-ovS" firstAttribute="trailing" secondItem="jJD-Af-8gM" secondAttribute="trailing" id="Fu9-A4-6KK"/>
                             <constraint firstItem="E8x-gd-EER" firstAttribute="leading" secondItem="jJD-Af-8gM" secondAttribute="leading" id="Lk0-pP-uQC"/>
+                            <constraint firstItem="AfD-l4-ovS" firstAttribute="leading" secondItem="jJD-Af-8gM" secondAttribute="leading" id="bCx-qg-0iy"/>
                             <constraint firstItem="E8x-gd-EER" firstAttribute="trailing" secondItem="jJD-Af-8gM" secondAttribute="trailing" id="d76-GR-Eyv"/>
                             <constraint firstItem="TEQ-W8-9hR" firstAttribute="top" secondItem="jJD-Af-8gM" secondAttribute="top" id="lzQ-4s-AKW"/>
                             <constraint firstItem="jJD-Af-8gM" firstAttribute="bottom" secondItem="E8x-gd-EER" secondAttribute="bottom" id="mqD-v2-Fwa"/>
+                            <constraint firstItem="AfD-l4-ovS" firstAttribute="top" secondItem="TEQ-W8-9hR" secondAttribute="bottom" id="plc-ZD-igX"/>
                             <constraint firstItem="E8x-gd-EER" firstAttribute="top" secondItem="jJD-Af-8gM" secondAttribute="top" id="vyI-GF-pYP"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="jJD-Af-8gM"/>
@@ -124,6 +147,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="bannerView" destination="AfD-l4-ovS" id="pDD-ee-cez"/>
                         <outlet property="label" destination="E8x-gd-EER" id="oyg-ah-I4B"/>
                         <outlet property="tableView" destination="TEQ-W8-9hR" id="1xx-oF-DC4"/>
                     </connections>
