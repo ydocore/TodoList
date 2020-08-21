@@ -604,7 +604,7 @@ extension ViewController: TableViewCellDelegate, TableViewCellDelegate2 {
         let realm = try! Realm()
 //        let realmData = realm.objects(TodoModel.self)
         let realmData = realm.objects(RealmData.self)
-        let indexPath = tableView.indexPath(for: cell)
+        var indexPath = tableView.indexPath(for: cell)
         let content = TodoCentents(value: ["content": cell.textField.text])
         
         // 最後の行の場合
@@ -620,13 +620,26 @@ extension ViewController: TableViewCellDelegate, TableViewCellDelegate2 {
                     realmData[0].todoModel[indexPath!.section].status = true
                 }
             }
+            tableView.reloadData()
+            if indexPath?.section == realmData[0].todoModel.count-1 {
+                DispatchQueue.main.async {
+                    print("reload")
+                    indexPath?.row += 1
+                    self.tableView.scrollToRow(at: indexPath!, at: UITableView.ScrollPosition.bottom, animated: false)
+                }
+            }
+//            DispatchQueue.main.async {
+//                print("reload")
+//                indexPath?.row += 1
+//                self.tableView.scrollToRow(at: indexPath!, at: UITableView.ScrollPosition.bottom, animated: false)
+//            }
         //最後の行以外の場合
         } else {
             try! realm.write {
                 realmData[0].todoModel[indexPath!.section].todoCentents[indexPath!.row] = content
             }
+            tableView.reloadData()
         }
         print("\n\n\n~realmData when Add Contents or Edit Contents~\n\n\(realmData)")
-        tableView.reloadData()
     }
 }
