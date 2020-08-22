@@ -484,11 +484,20 @@ extension ViewController {
         let realmData = realm.objects(RealmData.self)
 //        let realmData = realm.objects(TodoModel.self)
         guard let header = gestureRecognizer.view as? SectionHeaderView else { return }
-        if !realmData[0].todoModel[header.section].status {
-            try! realm.write {
-                realmData[0].todoModel[header.section].status = true
+//        if !realmData[0].todoModel[header.section].status {
+//            try! realm.write {
+//                realmData[0].todoModel[header.section].status = true
+//            }
+//            self.view.endEditing(true)
+//        }
+        for (i, model) in realmData[0].todoModel.enumerated() {
+            if !model.status {
+                try! realm.write {
+                    realmData[0].todoModel[i].status = true
+                }
+                self.view.endEditing(true)
+                break
             }
-            self.view.endEditing(true)
         }
         //矢印の画像をnilに設定する(nilにしないと上下矢印が一瞬重なって見えてしまう)
         header.setImage(isOpen: nil)
