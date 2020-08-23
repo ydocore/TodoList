@@ -564,6 +564,30 @@ extension ViewController: UIPickerViewDelegate, UIPickerViewDataSource {
 /*------------------------------------------------------*/
 
 extension ViewController: TableViewCellDelegate, TableViewCellDelegate2 {
+    func cancelCell(cell: TableViewCell2) {
+        let realm = try! Realm()
+        let realmData = realm.objects(RealmData.self)
+        let content = TodoCentents(value: ["content": cell.textField.text])
+        
+        if let indexPath = tableView.indexPath(for: cell) {
+            if indexPath.row == realmData[0].todoModel[indexPath.section].cellCount-1 {
+                if cell.textField!.text != "" {
+                    try! realm.write {
+                        realmData[0].todoModel[indexPath.section].cellCount += 1
+                        realmData[0].todoModel[indexPath.section].status = true
+                        realmData[0].todoModel[indexPath.section].todoCentents.append(content)
+                    }
+                    tableView.reloadData()
+                } else {
+                    try! realm.write {
+                        realmData[0].todoModel[indexPath.section].status = true
+                    }
+                    tableView.reloadData()
+                }
+            }
+        }
+    }
+    
 //    func editCell(cell: TableViewCell2) {
 //        let realm = try! Realm()
 //        let realmData = realm.objects(RealmData.self)
