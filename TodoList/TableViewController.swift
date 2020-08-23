@@ -12,6 +12,10 @@ import UIKit
 import RealmSwift
 
 class TableViewController: UITableViewController, TableViewCellDelegate, TableViewCellDelegate2, UIPickerViewDelegate, UIPickerViewDataSource {
+    func cancelCell(cell: TableViewCell2) {
+        print("a")
+    }
+    
     func editCell(cell: TableViewCell2) {
         print("a")
     }
@@ -19,6 +23,8 @@ class TableViewController: UITableViewController, TableViewCellDelegate, TableVi
     func backCell(cell: TableViewCell2) {
         print("a")
     }
+    
+    
     
     
     

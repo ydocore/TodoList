@@ -9,9 +9,11 @@
 /* Text cell setting */
 
 import UIKit
+import RealmSwift
 
 protocol TableViewCellDelegate2 {
 //    func editCell(cell: TableViewCell2)
+    func cancelCell(cell: TableViewCell2)
     func addCell(cell: TableViewCell2)
 }
 
@@ -39,8 +41,24 @@ class TableViewCell2: UITableViewCell, UITextFieldDelegate {
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
-      let cell = (textField.superview?.superview as? TableViewCell2)!
-      editCell = cell
+//        let realm = try! Realm()
+//        let realmData = realm.objects(RealmData.self)
+//        for (i, model) in realmData[0].todoModel.enumerated() {
+//            if !model.status {
+//                try! realm.write {
+//                    realmData[0].todoModel[i].status = true
+//                }
+//                break
+//            }
+//        }
+        let cell = (textField.superview?.superview as? TableViewCell2)!
+        editCell = cell
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        let cell = (textField.superview?.superview as? TableViewCell2)!
+        self.delegate?.cancelCell(cell: cell)
+        print("フォーカスが外れました")
     }
     
 //    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
@@ -60,6 +78,7 @@ class TableViewCell2: UITableViewCell, UITextFieldDelegate {
         let cell = (textField.superview?.superview as? TableViewCell2)!
         self.delegate?.addCell(cell: cell)
         textField.endEditing(true)
+        print(textField.superview?.superview?.superview)
         return true
     }
     
