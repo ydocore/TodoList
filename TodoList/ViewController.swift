@@ -8,12 +8,29 @@
 
 import UIKit
 import RealmSwift
+import GoogleMobileAds
 
-class ViewController: UIViewController, TableViewCellDelegate, TableViewCellDelegate2, UIPickerViewDelegate, UIPickerViewDataSource, UITableViewDelegate, UITableViewDataSource {
+class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     let pickerView = UIPickerView()
     var pickerRow = 0 //PickerViewで取得するIndex
+    var tapLocation: CGPoint = CGPoint()
+    var cellBottom = true
+    var cellRect: CGRect = CGRect()
+    var lastCell = false
     
+    // 広告ユニットID
+    let AdMobID = "ca-app-pub-7529204390438910/6931047383"
+    // テスト用広告ユニットID
+    let TEST_ID = "ca-app-pub-3940256099942544/2934735716"
+    // true:テスト
+    let AdMobTest:Bool = false
+    var topPadding:CGFloat = 0
+    var bottomPadding:CGFloat = 0
+    var leftPadding:CGFloat = 0
+    var rightPadding:CGFloat = 0
+
+    @IBOutlet weak var bannerView: GADBannerView!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var label: UILabel!
     @IBAction func categoryButton(_ sender: UIBarButtonItem) {
@@ -84,7 +101,8 @@ class ViewController: UIViewController, TableViewCellDelegate, TableViewCellDele
                 deleteAlert.addAction(cancelAction)
                 //初期値を設定
                 self.pickerView.selectRow(0, inComponent: 0, animated: true)
-                self.pickerView.frame = CGRect(x: 0, y: 80, width: self.view.frame.width-145, height: 100)
+//                self.pickerView.frame = CGRect(x: 0, y: 80, width: self.view.frame.width-145, height: 100)
+                self.pickerView.frame = CGRect(x: 0, y: 50, width: 270, height: 150)
                 self.pickerView.delegate = self
                 self.pickerView.dataSource = self
                 deleteAlert.view.addSubview(self.pickerView)
@@ -113,6 +131,11 @@ class ViewController: UIViewController, TableViewCellDelegate, TableViewCellDele
         alert.addAction(addCategory)
         alert.addAction(deleteCategory)
         alert.addAction(cancelAction)
+        
+        //iPad用
+        alert.popoverPresentationController?.sourceView=self.view
+        let screenSize=UIScreen.main.bounds
+        alert.popoverPresentationController?.sourceRect=CGRect(x:screenSize.size.width/2,y:screenSize.size.height,width:0,height:0)
         
         present(alert, animated: true, completion: nil)
         
@@ -154,46 +177,176 @@ class ViewController: UIViewController, TableViewCellDelegate, TableViewCellDele
         tableView.dataSource = self
         tableView.backgroundColor = UIColor.clear
         
+//        var admobView = GADBannerView()
+//
+//        bannerView = GADBannerView(adSize:kGADAdSizeBanner)
+//        // iPhone X のポートレート決め打ちです
+//        admobView.frame.origin = CGPoint(x:0, y:self.view.frame.size.height - admobView.frame.height - 34)
+//        admobView.frame.size = CGSize(width:self.view.frame.width, height:admobView.frame.height)
+//        print(admobView.frame.height)
+        
+        if AdMobTest {
+            bannerView.adUnitID = TEST_ID
+        } else{
+            bannerView.adUnitID = AdMobID
+        }
+        
+        bannerView.rootViewController = self
+        bannerView.load(GADRequest())
+        //bannerView.isHidden = true
+        
+//        self.view.addSubview(admobView)
+        
         navigationItem.rightBarButtonItem = editButtonItem
+//        navigationController!.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         
         print(Realm.Configuration.defaultConfiguration.fileURL)
+        print("Google Mobile Ads SDK version: \(GADRequest.sdkVersion())")
     }
     
-    // ボタンセルからテキストセルに変更
-    func changeCell(cell: TableViewCell) {
-        let realm = try! Realm()
-        let realmData = realm.objects(RealmData.self)
-        let indexPath = tableView.indexPath(for: cell)
-        
-        try! realm.write {
-            realmData[0].todoModel[indexPath!.section].status = false
-        }
-        tableView.reloadData()
+    override func viewDidLayoutSubviews() {
+        print(self.view.safeAreaInsets.bottom)
+//        NotificationCenter.default.addObserver(self,
+//            selector: #selector(self.checkSafeArea(notification:)),
+//            name: UIDevice.orientationDidChangeNotification, object: nil)
     }
     
-    // テキストの編集 or テキストの追加
-    func addCell(cell: TableViewCell2) {
+//    @objc func checkSafeArea(notification: NSNotification){
+//        // 画面の横幅を取得
+//        // 以降、Landscape のみを想定
+//        let screenWidth:CGFloat = view.frame.size.width
+//        let screenHeight:CGFloat = view.frame.size.height
+//
+//        if #available(iOS 13, *) {
+//            let window = UIApplication.shared.connectedScenes
+//            .filter({$0.activationState == .foregroundActive})
+//            .map({$0 as? UIWindowScene})
+//            .compactMap({$0})
+//            .first?
+//            .windows
+//            .filter({$0.isKeyWindow})
+//            .first
+//
+//            topPadding = window!.safeAreaInsets.top
+//            bottomPadding = window!.safeAreaInsets.bottom
+//            leftPadding = window!.safeAreaInsets.left
+//            rightPadding = window!.safeAreaInsets.right
+//
+//            print("topPadding = \(topPadding)")
+//            print("bottomPadding = \(bottomPadding)")
+//            print("leftPadding = \(leftPadding)")
+//            print("rightPadding = \(rightPadding)")
+//        }
+//    }
+    
+//    @objc func keyboardWillShow(notification: NSNotification) {
+//        let realm = try! Realm()
+//        let realmData = realm.objects(RealmData.self)
+//        var count = 0
+//        for model in realmData[0].todoModel {
+//            if model.open == true {
+//                count += model.todoCentents.count
+//            }
+//        }
+//        print(count)
+//        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+//            let margin = tableView.frame.maxY - cellRect.origin.y
+//            print(margin)
+//            print(keyboardSize.height)
+//            print(cellRect.origin.y)
+//            print(tableView.frame.maxY)
+//            print(self.view.frame.maxY)
+            
+//            if margin < keyboardSize.height {
+//                if tableView.frame.origin.y == 0 {
+//                    let suggestionHeight = keyboardSize.height - margin
+//                    tableView.frame.origin.y -= suggestionHeight
+//                } else {
+//                    let suggestionHeight = tableView.frame.origin.y + keyboardSize.height - margin
+//                    tableView.frame.origin.y -= suggestionHeight
+//                }
+//            }
+//            if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+//                if self.view.frame.origin.y == 0 {
+//                    self.view.frame.origin.y -= keyboardSize.height
+//                }
+//                } else {
+//                    let suggestionHeight = self.view.frame.origin.y + keyboardSize.height
+//                    self.view.frame.origin.y -= suggestionHeight
+//                }
+//            }
+//        }
+//    }
+    
+    @objc func keyboardWillShow(notification: NSNotification) {
         let realm = try! Realm()
-//        let realmData = realm.objects(TodoModel.self)
         let realmData = realm.objects(RealmData.self)
-        let indexPath = tableView.indexPath(for: cell)
-        let content = TodoCentents(value: ["content": cell.textField.text])
-        
-        // 最後の行の場合
-        if indexPath!.row == realmData[0].todoModel[indexPath!.section].cellCount-1 {
-            try! realm.write {
-                realmData[0].todoModel[indexPath!.section].cellCount += 1
-                realmData[0].todoModel[indexPath!.section].status = true
-                realmData[0].todoModel[indexPath!.section].todoCentents.append(content)
-            }
-        //最後の行以外の場合
-        } else {
-            try! realm.write {
-                realmData[0].todoModel[indexPath!.section].todoCentents[indexPath!.row] = content
+        let sectionCount = realmData[0].todoModel.count
+        let navBarHeight = self.navigationController?.navigationBar.frame.size.height
+        var cellCount = 0
+        for model in realmData[0].todoModel {
+            if model.open == true {
+                cellCount += model.cellCount
             }
         }
-        print("\n\n\n~realmData when Add Contents or Edit Contents~\n\n\(realmData)")
-        tableView.reloadData()
+        let height: CGFloat = CGFloat(50*sectionCount + 44*cellCount)
+        
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            var tapCell: CGFloat = CGFloat()
+            if lastCell {
+                tapCell = cellRect.origin.y + cellRect.height
+            } else {
+                let rect = tableView.convert(editCell.frame, to: self.view)
+                tapCell = rect.origin.y + rect.height
+            }
+            if tapCell > view.frame.height - keyboardSize.height {
+                print("View Up!")
+                let heightDifference = tapCell - (view.frame.height - keyboardSize.height)
+                if self.view.frame.origin.y == 0 {
+                    self.view.frame.origin.y -= heightDifference
+                }
+            }
+            cellRect = CGRect(x:0,y:0,width:0,height:0)
+            lastCell = false
+//            if height > view.frame.height-(keyboardSize.height+100) && height <= view.frame.height-100 {
+//                print("画面内")
+//                let heightDifference = (keyboardSize.height+100) - (view.frame.height-height)
+//                if self.view.frame.origin.y == 0 {
+//                    self.view.frame.origin.y -= heightDifference
+//                }
+////                } else {
+////                    let suggestionHeight = self.view.frame.origin.y + heightDifference
+////                    self.view.frame.origin.y -= suggestionHeight
+////                }
+//            } else if height > view.frame.height-100 {
+//                print("画面外")
+//                if self.view.frame.origin.y == 0 {
+//                    self.view.frame.origin.y -= keyboardSize.height
+//                } else {
+//                    let suggestionHeight = self.view.frame.origin.y + keyboardSize.height
+//                    self.view.frame.origin.y -= suggestionHeight
+//                }
+//            }
+//            print(view.frame.height)
+//            print(height)
+//            print(keyboardSize.height)
+//            print(navBarHeight)
+        }
+    }
+
+    @objc func keyboardWillHide() {
+        if self.view.frame.origin.y != 0 {
+            self.view.frame.origin.y = 0
+        }
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        let touch = touches.first!
+        let location = touch.location(in: tableView)
+        print(location)
     }
     
     // データベース全削除
@@ -253,6 +406,7 @@ extension ViewController {
                 cell.backgroundColor = UIColor.clear
                 cell.delegate = self
                 cell.textField.text = ""
+                cell.textField.becomeFirstResponder()
                 return cell
             }
         // 最後の行ではない場合
@@ -277,7 +431,9 @@ extension ViewController {
         header.section = section
         header.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(TableViewController.toggleCategoryHeader(gestureRecognizer: ))))
         header.setImage(isOpen: realmData[0].todoModel[section].open)
-        header.backgroundColor = UIColor(red: 150/255, green: 150/255, blue: 150/255, alpha: 0.3)
+        header.backgroundColor = UIColor(red: 150/255, green: 150/255, blue: 150/255, alpha: 1.0)
+        header.layer.borderColor = UIColor.black.cgColor
+        header.layer.borderWidth = 1
 //        print(header.label.text!)
 //        print(header.section)
         
@@ -329,9 +485,25 @@ extension ViewController {
     
     //sectionがタップされたら呼び出される
     @objc func toggleCategoryHeader(gestureRecognizer: UITapGestureRecognizer) {
-//        let realm = try! Realm()
+        let realm = try! Realm()
+        let realmData = realm.objects(RealmData.self)
 //        let realmData = realm.objects(TodoModel.self)
         guard let header = gestureRecognizer.view as? SectionHeaderView else { return }
+//        if !realmData[0].todoModel[header.section].status {
+//            try! realm.write {
+//                realmData[0].todoModel[header.section].status = true
+//            }
+//            self.view.endEditing(true)
+//        }
+        for (i, model) in realmData[0].todoModel.enumerated() {
+            if !model.status {
+                try! realm.write {
+                    realmData[0].todoModel[i].status = true
+                }
+                self.view.endEditing(true)
+                break
+            }
+        }
         //矢印の画像をnilに設定する(nilにしないと上下矢印が一瞬重なって見えてしまう)
         header.setImage(isOpen: nil)
 //        let isOepn = realmData[header.section].open
@@ -361,7 +533,7 @@ extension ViewController {
 /*------------------------------------------------------*/
 
 // PickerView Setting
-extension ViewController {
+extension ViewController: UIPickerViewDelegate, UIPickerViewDataSource {
     
     // PickerViewの列数
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
@@ -392,4 +564,128 @@ extension ViewController {
         pickerRow = row
     }
     
+}
+
+/*------------------------------------------------------*/
+
+extension ViewController: TableViewCellDelegate, TableViewCellDelegate2 {
+    func cancelCell(cell: TableViewCell2) {
+        let realm = try! Realm()
+        let realmData = realm.objects(RealmData.self)
+        let content = TodoCentents(value: ["content": cell.textField.text])
+        
+        if let indexPath = tableView.indexPath(for: cell) {
+            if indexPath.row == realmData[0].todoModel[indexPath.section].cellCount-1 {
+                if cell.textField!.text != "" {
+                    try! realm.write {
+                        realmData[0].todoModel[indexPath.section].cellCount += 1
+                        realmData[0].todoModel[indexPath.section].status = true
+                        realmData[0].todoModel[indexPath.section].todoCentents.append(content)
+                    }
+                    tableView.reloadData()
+                } else {
+                    try! realm.write {
+                        realmData[0].todoModel[indexPath.section].status = true
+                    }
+                    tableView.reloadData()
+                }
+            }
+        }
+    }
+    
+//    func editCell(cell: TableViewCell2) {
+//        let realm = try! Realm()
+//        let realmData = realm.objects(RealmData.self)
+//        let indexPath = tableView.indexPath(for: cell)
+//        if indexPath!.row != realmData[0].todoModel[indexPath!.section].cellCount {
+////            tableView.reloadData()
+////            DispatchQueue.main.async {
+////                self.tableView.scrollToRow(at: indexPath!, at: UITableView.ScrollPosition.bottom, animated: false)
+////            }
+//            cellRect = tableView.convert(cell.frame, to: self.view)
+//        }
+//    }
+    
+    // ボタンセルからテキストセルに変更
+    func changeCell(cell: TableViewCell) {
+        let realm = try! Realm()
+        let realmData = realm.objects(RealmData.self)
+        let indexPath = tableView.indexPath(for: cell)
+//        tableView.convert(cell.frame, to: self.view)
+//        let frame = cell.convert(tableView.rectForRow(at: indexPath!), to: self.view)
+//        let frame2 = cell.frame
+//        cellRect = tableView.rectForRow(at: indexPath!)
+//        tableView.scrollToRow(at: indexPath!, at: UITableView.ScrollPosition.top, animated: false)
+//        cellRect = frame
+//        print(frame)
+//        print(frame2)
+//        print(cellRect)
+//        print(tableView.bounds)
+//        print(tableView.contentOffset)
+//        print(cellRect.height)
+//        print(cellRect.origin.y)
+        cellRect = tableView.convert(cell.frame, to: self.view)
+        print(tableView.convert(cell.frame, to: self.view))
+        
+        try! realm.write {
+            realmData[0].todoModel[indexPath!.section].status = false
+        }
+        lastCell = true
+        tableView.reloadData()
+//        DispatchQueue.main.async {
+//            self.tableView.scrollToRow(at: indexPath!, at: UITableView.ScrollPosition.bottom, animated: false)
+//        }
+//        let frame3 = cell.frame
+//        if frame2 == frame3 {
+//            cellBottom = false
+//        } else {
+//            cellBottom = true
+//        }
+        print(indexPath)
+    }
+    
+    // テキストの編集 or テキストの追加
+    func addCell(cell: TableViewCell2) {
+        let realm = try! Realm()
+//        let realmData = realm.objects(TodoModel.self)
+        let realmData = realm.objects(RealmData.self)
+        var indexPath = tableView.indexPath(for: cell)
+        let content = TodoCentents(value: ["content": cell.textField.text])
+        
+        // 最後の行の場合
+        if indexPath!.row == realmData[0].todoModel[indexPath!.section].cellCount-1 {
+            if cell.textField!.text != "" {
+                try! realm.write {
+                    realmData[0].todoModel[indexPath!.section].cellCount += 1
+                    realmData[0].todoModel[indexPath!.section].status = true
+                    realmData[0].todoModel[indexPath!.section].todoCentents.append(content)
+                }
+                tableView.reloadData()
+                if indexPath?.section == realmData[0].todoModel.count-1 {
+                    DispatchQueue.main.async {
+                        print("reload")
+                        indexPath?.row += 1
+                        self.tableView.scrollToRow(at: indexPath!, at: UITableView.ScrollPosition.bottom, animated: false)
+                    }
+                }
+            } else {
+                try! realm.write {
+                    realmData[0].todoModel[indexPath!.section].status = true
+                }
+                tableView.reloadData()
+            }
+//            DispatchQueue.main.async {
+//                print("reload")
+//                indexPath?.row += 1
+//                self.tableView.scrollToRow(at: indexPath!, at: UITableView.ScrollPosition.bottom, animated: false)
+//            }
+        //最後の行以外の場合
+        } else {
+            try! realm.write {
+                realmData[0].todoModel[indexPath!.section].todoCentents[indexPath!.row] = content
+            }
+            tableView.reloadData()
+        }
+        print("\n\n\n~realmData when Add Contents or Edit Contents~\n\n\(realmData)")
+    }
 }
