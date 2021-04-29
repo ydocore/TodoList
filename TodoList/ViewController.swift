@@ -20,11 +20,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var lastCell = false
     
     // 広告ユニットID
-    let AdMobID = "[Your AdMob ID]"
+    let AdMobID = "ca-app-pub-7529204390438910/6931047383"
     // テスト用広告ユニットID
     let TEST_ID = "ca-app-pub-3940256099942544/2934735716"
     // true:テスト
-    let AdMobTest:Bool = true
+    let AdMobTest:Bool = false
     var topPadding:CGFloat = 0
     var bottomPadding:CGFloat = 0
     var leftPadding:CGFloat = 0
@@ -132,6 +132,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         alert.addAction(deleteCategory)
         alert.addAction(cancelAction)
         
+        //iPad用
+        alert.popoverPresentationController?.sourceView=self.view
+        let screenSize=UIScreen.main.bounds
+        alert.popoverPresentationController?.sourceRect=CGRect(x:screenSize.size.width/2,y:screenSize.size.height,width:0,height:0)
+        
         present(alert, animated: true, completion: nil)
         
     }
@@ -182,13 +187,13 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         if AdMobTest {
             bannerView.adUnitID = TEST_ID
-        }
-        else{
+        } else{
             bannerView.adUnitID = AdMobID
         }
         
         bannerView.rootViewController = self
         bannerView.load(GADRequest())
+        //bannerView.isHidden = true
         
 //        self.view.addSubview(admobView)
         
